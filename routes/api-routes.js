@@ -15,3 +15,41 @@ module.exports = function(app) {
             }
         );
     });
+    app.post("/search", (req, res) => {
+        // set bookTitle to the req.body.title with spaces replaced with plus signs(+)
+        let bookTitle = req.body.title.replace(/\s/g, "+");
+        axios.get(
+            `https://www.googleapis.com/books/v1/volumes?q=${bookTitle}&key=${process.env.GBOOKS_KEY}`
+        ).then(
+            (response) => {
+                res.json(response.data.items)
+            }
+        ).catch(
+            (err) => {
+                res.json({error: error})
+            }
+        );
+    });
+    app.post("/api/books", (req, res) => {
+        db.Book.create(req.body).then(
+            (response) => {
+                res.json({successful: response});
+            }
+        ).catch(
+            (err) => {
+                res.json({error: err});
+            }
+        );
+    });
+
+    app.delete("/api/books/:id", (req, res) => {
+        db.Book.findByIdAndDelete(req.params.id).then(
+            (response) => {
+                res.json({successful: response});
+            }
+        ).catch(
+            (err) => {
+                rres.json({error: err});
+            }
+        );
+    });
